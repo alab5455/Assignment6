@@ -146,7 +146,7 @@ class BayesNetwork(object):
 				else:
 					return N1.probs[status2 + N2.marginalProbName]
 			else:
-				if not (N1.parents.has_key(N2.names)):
+				if not (N1.parents.has_key(N2.name)):
 					N = None
 					for i in N1.parents.values():
 						N = i
@@ -163,8 +163,8 @@ class BayesNetwork(object):
 						if (i.name != N2.name):
 							NProbToSum = (i.marginalProbName, i.marginalProbability)
 							
-					x = ((Status2 + N2.marginalProbName + NProbtoSum[0], NProbToSum[0] + status2 + N2.marginalProbName), N2.marginalProbability * NProbToSum[1])
-					y = ((Status2 + N2.marginalProbName + '~' + NProbtoSum[0], '~' + NProbToSum[0] + status2 + N2.marginalProbName), N2.marginalProbability * (1 - NProbToSum[1]))
+					x = ((status2 + N2.marginalProbName + NProbToSum[0], NProbToSum[0] + status2 + N2.marginalProbName), N2.marginalProbability * NProbToSum[1])
+					y = ((status2 + N2.marginalProbName + '~' + NProbToSum[0], '~' + NProbToSum[0] + status2 + N2.marginalProbName), N2.marginalProbability * (1 - NProbToSum[1]))
 					
 					R1 = x[1] * N1.probs.get(x[0][0], N1.probs.get(x[0][1], False))
 					R2 = y[1] * N1.probs.get(y[0][0], N1.probs.get(y[0][1], False))
@@ -266,9 +266,9 @@ class BayesNetwork(object):
 			Nroot = evidence[1]
 			#P(X | c,s ) = P (x|c)
 			if (Nroot == N2):
-				if (N2.parents.has_key(N3.name) and N2.childern.has_key(N1.name)):
+				if (N2.parents.has_key(N3.name) and N2.children.has_key(N1.name)):
 					return node.calculateConditionalProbability(N1, N2, status1, status2)
-				elif (N2.parents.has_key(N3.name) and N3.childern.has_key(N1.name)):
+				elif (N2.parents.has_key(N3.name) and N3.children.has_key(N1.name)):
 					return node.calculateConditionalProbability(N1, N3, status1, status3)
 			elif (Nroot == N3):
 				if (N3.parents.has_key(N2.name) and N3.children.has_key(N1.name)):
@@ -282,7 +282,7 @@ class BayesNetwork(object):
 			
 			for i in range(len(Narray)):
 				if Narray[i] == Nroot:
-					NrootIdentitty = i
+					NrootIdentity = i
 				else:
 					notNroot.append(i)
 			
@@ -300,7 +300,7 @@ class BayesNetwork(object):
 			
 			mult = Nroot.probs.get(Nstatus[notNroot[0]] + Narray[notNroot[0]].marginalProbName + Nstatus[notNroot[1]] + Narray[notNroot[1]].marginalProbName, Nroot.probs.get(Nstatus[notNroot[1]] + Narray[notNroot[1]].marginalProbName + Nstatus[notNroot[0]] + Narray[notNroot[0]].marginalProbName, False))
 			prob = prob * mult
-			prob = prob / (node.calculateConditionalProbability(Nroot, Narray[NrootParentEvidence], Nstatus[NrootIdentity], Nstatus[NrootParentEvidence]))
+			prob = prob / node.calculateConditionalProbability(Nroot, Narray[NrootParentEvidence], Nstatus[NrootIdentity], Nstatus[NrootParentEvidence])
 			
 			return prob
 			
